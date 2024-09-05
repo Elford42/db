@@ -142,7 +142,6 @@ app.layout = html.Div(
 
 def update_output(start_date, end_date):
     pass
- 
-server = app.server 
-#if __name__=='__main__':
-#    app.run_server(debug=True, use_reloader=False,port=8080)
+    
+if __name__=='__main__':
+    app.run_server(debug=True, use_reloader=False, port=8080)
