@@ -12,7 +12,10 @@ from copy import copy
 
 
 # initialize the dash app as 'app'
-app = Dash(__name__,external_stylesheets=[dbc.themes.SLATE])
+app = Dash(__name__,
+           external_stylesheets=[dbc.themes.SLATE],
+           requests_pathname_prefix="/app/QPW/",
+           routes_pathname_prefix="/app/QPW/")
 
 # conect to swapit and dcp databases
 sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_SWAPIT_DBNAME','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
