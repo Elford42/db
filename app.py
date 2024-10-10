@@ -232,7 +232,8 @@ app.layout = html.Div(
             id="submit_tooltip",
             target="buttons_row",
             placement="bottom"
-        )
+        ),
+        html.h4(user)
     
     ],
     style={'textAlign': 'center'}
