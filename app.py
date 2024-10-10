@@ -233,7 +233,7 @@ app.layout = html.Div(
             target="buttons_row",
             placement="bottom"
         ),
-        html.h4(user)
+        html.H4(user)
     
     ],
     style={'textAlign': 'center'}
