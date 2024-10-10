@@ -2,6 +2,8 @@ from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 import os
 from dotenv import load_dotenv 
+import json
+import base64
 
 def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_pwd): 
 
@@ -21,6 +23,17 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
         DB_USER = secret_client.get_secret(datahub_user).value
         DB_PASS = secret_client.get_secret(datahub_pwd).value
         print ('Credentials loaded from FSDH')
+        
+        # Try to get user
+        token = credential.get_token("https://management.azure.com/", scopes=["user.read"])
+
+        base64_meta_data = token.token.split(".")[1].encode("utf-8") + b'=='
+        json_bytes = base64.decodebytes(base64_meta_data)
+        json_string = json_bytes.decode("utf-8")
+        json_dict = json.loads(json_string)
+        current_user_id = json_dict["upn"]
+        print(f"{current_user_id=}")
+        
 
     except Exception as e:
         # declare FSDH keys exception
