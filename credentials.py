@@ -55,7 +55,8 @@ def get_user_id():
         credential = DefaultAzureCredential()
         
         # Try to get user
-        token = credential.get_token(KEY_VAULT_URL, scopes=["user.read"])
+        #token = credential.get_token(KEY_VAULT_URL, scopes=["user.read"])
+        token = credential.get_token(scopes=["user.read"])
     
         base64_meta_data = token.token.split(".")[1].encode("utf-8") + b'=='
         json_bytes = base64.decodebytes(base64_meta_data)

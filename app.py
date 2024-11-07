@@ -64,7 +64,7 @@ app.layout = html.Div(
                 dcc.Dropdown(
                     sorted(users['fullname'].values, key=lambda x: x.split(" ")[-1]),
                     id = "name",
-                    placeholder="..."
+                    placeholder=user
                 ),
                 html.Br()],
                 width = 8
@@ -83,7 +83,7 @@ app.layout = html.Div(
                 dcc.Dropdown(
                     projects.tolist(),
                     id = "project",
-                    placeholder=user
+                    placeholder="..."
                 ),
                 html.Br()],
                 width = 8
