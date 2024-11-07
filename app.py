@@ -26,6 +26,7 @@ dcp_sql_engine=create_engine(sql_engine_string)
 
 #try to get userid
 user = get_user_id()
+print(user)
 
 # pull required data from tables
 users = pd.read_sql_table("users", dcp_sql_engine)
