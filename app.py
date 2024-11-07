@@ -5,7 +5,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
-from credentials import sql_engine_string_generator
+from credentials import sql_engine_string_generator,get_user_id
 import os
 from dotenv import load_dotenv 
 from copy import copy
@@ -24,6 +24,8 @@ swapit_sql_engine=create_engine(sql_engine_string)
 sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_DCP_DBNAME','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
 dcp_sql_engine=create_engine(sql_engine_string)
 
+#try to get userid
+user = get_user_id()
 
 # pull required data from tables
 users = pd.read_sql_table("users", dcp_sql_engine)
@@ -81,7 +83,7 @@ app.layout = html.Div(
                 dcc.Dropdown(
                     projects.tolist(),
                     id = "project",
-                    placeholder="..."
+                    placeholder=user
                 ),
                 html.Br()],
                 width = 8

@@ -24,25 +24,16 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
         DB_PASS = secret_client.get_secret(datahub_pwd).value
         print ('Credentials loaded from FSDH')
         
-        # Try to get user
-        token = credential.get_token("https://management.azure.com/", scopes=["user.read"])
-
-        base64_meta_data = token.token.split(".")[1].encode("utf-8") + b'=='
-        json_bytes = base64.decodebytes(base64_meta_data)
-        json_string = json_bytes.decode("utf-8")
-        json_dict = json.loads(json_string)
-        current_user_id = json_dict["upn"]
-        print(f"{current_user_id=}")
-        
 
     except Exception as e:
+        
         # declare FSDH keys exception
         error_occur = True
-        # print(f"An error occurred: {e}")
+        print(f"An error occurred: {e}")
 
         # load the .env file using the dotenv module remove this when running a powershell script to confirue system environment vars
         load_dotenv() # default is relative local directory 
-        env_path='.env'
+        
         DB_HOST = os.getenv(datahub_host)
         DB_NAME = os.getenv(datahub_db)
         DB_USER = os.getenv(datahub_user)
@@ -54,9 +45,25 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
     print ('sql engine string: ',sql_engine_string)
     return sql_engine_string
 
-
-
-
-
-if __name__=='__main__':
-    app.run(debug=True)
+def get_user_id():
+    
+    try:
+        # set the key vault path
+        KEY_VAULT_URL = "https://fsdh-swapit-dw1-poc-kv.vault.azure.net/"
+    
+        # Retrieve the secrets containing DB connection details
+        credential = DefaultAzureCredential()
+        
+        # Try to get user
+        token = credential.get_token(KEY_VAULT_URL, scopes=["user.read"])
+    
+        base64_meta_data = token.token.split(".")[1].encode("utf-8") + b'=='
+        json_bytes = base64.decodebytes(base64_meta_data)
+        json_string = json_bytes.decode("utf-8")
+        json_dict = json.loads(json_string)
+        current_user_id = json_dict["upn"]
+        return f"{current_user_id=}"
+    
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        
