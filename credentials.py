@@ -50,7 +50,7 @@ def get_user_id():
     
     try:
         
-        user = request.headers['dh-user']
+        user = request.headers
         return user
         
         
