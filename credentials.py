@@ -50,8 +50,8 @@ def get_user_id():
     
     try:
         
-        user = request.headers
-        return user
+        user = request.headers.get('dh-user')
+        return f'User is: {user}'
         
         
         # # set the key vault path
