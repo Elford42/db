@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv 
 import json
 import base64
+from flask import request
 
 def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_pwd): 
 
@@ -48,22 +49,24 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
 def get_user_id():
     
     try:
-        # set the key vault path
-        KEY_VAULT_URL = "https://fsdh-swapit-dw1-poc-kv.vault.azure.net/"
-    
-        # Retrieve the secrets containing DB connection details
-        credential = DefaultAzureCredential()
         
-        # Try to get user
-        #token = credential.get_token(KEY_VAULT_URL, scopes=["user.read"])
-        token = credential.get_token(scopes=["user.read"])
+        user = request.headers['dh-user']
+        return user
+        
+        
+        # # set the key vault path
+        # KEY_VAULT_URL = "https://fsdh-swapit-dw1-poc-kv.vault.azure.net/"
     
-        base64_meta_data = token.token.split(".")[1].encode("utf-8") + b'=='
-        json_bytes = base64.decodebytes(base64_meta_data)
-        json_string = json_bytes.decode("utf-8")
-        json_dict = json.loads(json_string)
-        current_user_id = json_dict["upn"]
-        return f"{current_user_id=}"
+        # # Try to get user 
+        # credential = DefaultAzureCredential()
+        # token = credential.get_token(scopes=["user.read"])
+    
+        # base64_meta_data = token.token.split(".")[1].encode("utf-8") + b'=='
+        # json_bytes = base64.decodebytes(base64_meta_data)
+        # json_string = json_bytes.decode("utf-8")
+        # json_dict = json.loads(json_string)
+        # current_user_id = json_dict["upn"]
+        # return f"{current_user_id=}"
     
     except Exception as e:
         print(f"An error occurred: {e}")
