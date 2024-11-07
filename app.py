@@ -26,7 +26,6 @@ dcp_sql_engine=create_engine(sql_engine_string)
 
 #try to get userid
 user = get_user_id()
-print(user)
 
 # pull required data from tables
 users = pd.read_sql_table("users", dcp_sql_engine)
@@ -229,6 +228,15 @@ app.layout = html.Div(
             id = "buttons_row",
             justify = "center",
             className="d-grid gap-2"
+        ),
+        dbc.Row([
+            dbc.Col([
+                html.H1(user)],
+                width = 4
+            )],
+            id = "test_row",
+            justify = "center",
+            style={'display':'none'}
         ),
         dbc.Tooltip(
             "Required input missing",
