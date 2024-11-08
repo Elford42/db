@@ -70,7 +70,7 @@ app.layout = html.Div(
                 html.Br()],
                 width = 8
             )],
-            id = "USER_row",
+            id = "user_row",
             justify = "center"
         ),
         
@@ -333,7 +333,7 @@ def button_update(user,project,site,instrument,datetime,timezone):
 # Dash callback to update headers display on page load
 @app.callback(
     Output('user', 'value'),
-    Input('headers-display', 'id')  # This triggers the callback on page load
+    Input('user', 'id')  # This triggers the callback on page load
 )
 def display_headers(_):
     if request_headers:
