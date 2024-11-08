@@ -45,29 +45,4 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
     sql_engine_string=('postgresql://{}:{}@{}/{}?sslmode=require').format(DB_USER,DB_PASS,DB_HOST,DB_NAME)
     print ('sql engine string: ',sql_engine_string)
     return sql_engine_string
-
-def get_user_id():
-    
-    try:
-        
-        user = request.headers.get('dh-user')
-        return f'User is: {user}'
-        
-        
-        # # set the key vault path
-        # KEY_VAULT_URL = "https://fsdh-swapit-dw1-poc-kv.vault.azure.net/"
-    
-        # # Try to get user 
-        # credential = DefaultAzureCredential()
-        # token = credential.get_token(scopes=["user.read"])
-    
-        # base64_meta_data = token.token.split(".")[1].encode("utf-8") + b'=='
-        # json_bytes = base64.decodebytes(base64_meta_data)
-        # json_string = json_bytes.decode("utf-8")
-        # json_dict = json.loads(json_string)
-        # current_user_id = json_dict["upn"]
-        # return f"{current_user_id=}"
-    
-    except Exception as e:
-        print(f"An error occurred: {e}")
         

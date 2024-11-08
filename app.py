@@ -9,7 +9,7 @@ from credentials import sql_engine_string_generator,get_user_id
 import os
 from dotenv import load_dotenv 
 from copy import copy
-
+from flask import request,session
 
 # initialize the dash app as 'app'
 app = Dash(__name__,
@@ -25,7 +25,7 @@ sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_DCP
 dcp_sql_engine=create_engine(sql_engine_string)
 
 #try to get userid
-user = get_user_id()
+#user = get_user_id()
 
 # pull required data from tables
 users = pd.read_sql_table("users", dcp_sql_engine)
@@ -231,7 +231,7 @@ app.layout = html.Div(
         ),
         dbc.Row([
             dbc.Col([
-                html.H1(user)],
+                html.H1(session.get('user'))],
                 width = 4
             )],
             id = "test_row",
@@ -338,6 +338,10 @@ def button_update(name,project,site,instrument,datetime,timezone):
     else:
         return [False,"Ready to submit"]
 
+@app.server.before_request
+def get_user_id():
+    user = request.headers.get('dh-user')
+    session['user']= user
 
 server = app.server 
 # if __name__=='__main__':
