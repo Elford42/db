@@ -12,13 +12,11 @@ from copy import copy
 from flask import request,session
 
 # initialize the dash app as 'app'
-# app = Dash(__name__,
-#            external_stylesheets=[dbc.themes.SLATE],
-#            requests_pathname_prefix="/app/QPW/",
-#            routes_pathname_prefix="/app/QPW/")
-
 app = Dash(__name__,
-           external_stylesheets=[dbc.themes.SLATE])
+            external_stylesheets=[dbc.themes.SLATE],
+            requests_pathname_prefix="/app/QPW/",
+            routes_pathname_prefix="/app/QPW/")
+
 
 # Global variable to store headers
 request_headers = {}
@@ -353,6 +351,6 @@ def before_request():
     global request_headers
     request_headers = dict(request.headers)  # Capture headers before processing any request
 
-#server = app.server 
-if __name__=='__main__':
-    app.run_server(debug=True,port=8080)
+server = app.server 
+# if __name__=='__main__':
+#     app.run_server(debug=True,port=8080)
