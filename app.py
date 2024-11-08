@@ -5,7 +5,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
-from credentials import sql_engine_string_generator,get_user_id
+from credentials import sql_engine_string_generator
 import os
 from dotenv import load_dotenv 
 from copy import copy
