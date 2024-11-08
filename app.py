@@ -62,7 +62,7 @@ app.layout = html.Div(
                     "User",
                     html.Span('*',style={"color": "red","font-weight": "bold"})
                 ])),
-                dcc.Dropdown(
+                dcc.Input(
                     #sorted(users['fullname'].values, key=lambda x: x.split(" ")[-1]),
                     id = "user",
                     placeholder="..."
@@ -337,7 +337,7 @@ def button_update(user,project,site,instrument,datetime,timezone):
 )
 def display_headers(_):
     if request_headers:
-        return request_headers['Dh-User']
+        return request_headers.get('Dh-User')
     return None
 
 
