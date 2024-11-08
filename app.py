@@ -27,8 +27,6 @@ swapit_sql_engine=create_engine(sql_engine_string)
 sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_DCP_DBNAME','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
 dcp_sql_engine=create_engine(sql_engine_string)
 
-#try to get userid
-#user = get_user_id()
 
 # pull required data from tables
 users = pd.read_sql_table("users", dcp_sql_engine)
@@ -57,22 +55,22 @@ app.layout = html.Div(
         ]),
         html.Br(),
         
-        # Name
+        # User
         dbc.Row([
             dbc.Col(
                 [dbc.Label(html.H2([
-                    "Name",
+                    "User",
                     html.Span('*',style={"color": "red","font-weight": "bold"})
                 ])),
                 dcc.Dropdown(
-                    sorted(users['fullname'].values, key=lambda x: x.split(" ")[-1]),
-                    id = "name",
+                    #sorted(users['fullname'].values, key=lambda x: x.split(" ")[-1]),
+                    id = "user",
                     placeholder="..."
                 ),
                 html.Br()],
                 width = 8
             )],
-            id = "name_row",
+            id = "USER_row",
             justify = "center"
         ),
         
@@ -232,15 +230,6 @@ app.layout = html.Div(
             justify = "center",
             className="d-grid gap-2"
         ),
-        dbc.Row([
-            dbc.Col([
-                html.Div(id="headers-display")],
-                width = 4
-            )],
-            id = "test_row",
-            justify = "center",
-            style={'display':'none'}
-        ),
         dbc.Tooltip(
             "Required input missing",
             id="submit_tooltip",
@@ -322,16 +311,16 @@ def flag_update(flag_cat):
 @app.callback(
     Output('submit_button','disabled'),
     Output('submit_tooltip','children'),
-    Input('name','value'),
+    Input('user','value'),
     Input('project','value'),
     Input('site','value'),
     Input('instrument','value'),
     Input('datetime','value'),
     Input('timezone','value'))
     
-def button_update(name,project,site,instrument,datetime,timezone):
+def button_update(user,project,site,instrument,datetime,timezone):
     
-    if any([name is None, 
+    if any([user is None, 
             project is None,
             site is None,
             instrument is None,
@@ -343,15 +332,13 @@ def button_update(name,project,site,instrument,datetime,timezone):
 
 # Dash callback to update headers display on page load
 @app.callback(
-    Output('headers-display', 'children'),
+    Output('user', 'value'),
     Input('headers-display', 'id')  # This triggers the callback on page load
 )
 def display_headers(_):
     if request_headers:
-        # Display headers in a human-readable format
-        headers_html = [html.Pre(f"{key}: {value}") for key, value in request_headers.items()]
-        return headers_html
-    return "Waiting to capture headers..."
+        return request_headers['Dh-User']
+    return None
 
 
 # Server route to automatically capture headers when the page is first loaded
