@@ -17,6 +17,9 @@ app = Dash(__name__,
            requests_pathname_prefix="/app/QPW/",
            routes_pathname_prefix="/app/QPW/")
 
+# Global variable to store headers
+request_headers = {}
+
 # conect to swapit and dcp databases
 sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_SWAPIT_DBNAME','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
 swapit_sql_engine=create_engine(sql_engine_string)
@@ -231,7 +234,7 @@ app.layout = html.Div(
         ),
         dbc.Row([
             dbc.Col([
-                html.H1(session.get('user'))],
+                html.Div(id="headers-display")],
                 width = 4
             )],
             id = "test_row",
@@ -338,10 +341,25 @@ def button_update(name,project,site,instrument,datetime,timezone):
     else:
         return [False,"Ready to submit"]
 
+# Dash callback to update headers display on page load
+@app.callback(
+    Output('headers-display', 'children'),
+    Input('headers-display', 'id')  # This triggers the callback on page load
+)
+def display_headers(_):
+    if request_headers:
+        # Display headers in a human-readable format
+        headers_html = [html.Pre(f"{key}: {value}") for key, value in request_headers.items()]
+        return headers_html
+    return "Waiting to capture headers..."
+
+
+# Server route to automatically capture headers when the page is first loaded
 @app.server.before_request
-def get_user_id():
-    user = request.headers.get('dh-user')
-    session['user']= user
+def before_request():
+    global request_headers
+    request_headers = dict(request.headers)  # Capture headers before processing any request
+
 
 server = app.server 
 # if __name__=='__main__':
