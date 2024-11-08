@@ -12,10 +12,13 @@ from copy import copy
 from flask import request,session
 
 # initialize the dash app as 'app'
+# app = Dash(__name__,
+#            external_stylesheets=[dbc.themes.SLATE],
+#            requests_pathname_prefix="/app/QPW/",
+#            routes_pathname_prefix="/app/QPW/")
+
 app = Dash(__name__,
-           external_stylesheets=[dbc.themes.SLATE],
-           requests_pathname_prefix="/app/QPW/",
-           routes_pathname_prefix="/app/QPW/")
+           external_stylesheets=[dbc.themes.SLATE])
 
 # Global variable to store headers
 request_headers = {}
@@ -62,10 +65,11 @@ app.layout = html.Div(
                     "User",
                     html.Span('*',style={"color": "red","font-weight": "bold"})
                 ])),
+                html.Br(),
                 dcc.Input(
-                    #sorted(users['fullname'].values, key=lambda x: x.split(" ")[-1]),
+                    style={'textAlign': 'center'},
                     id = "user",
-                    placeholder="..."
+                    placeholder="...",
                 ),
                 html.Br()],
                 width = 8
@@ -333,12 +337,14 @@ def button_update(user,project,site,instrument,datetime,timezone):
 # Dash callback to update headers display on page load
 @app.callback(
     Output('user', 'value'),
+    Output('user', 'disabled'),
     Input('user', 'id')  # This triggers the callback on page load
 )
 def display_headers(_):
-    if request_headers:
-        return request_headers.get('Dh-User')
-    return None
+    if request_headers.get('Dh-User'):
+        print("test")
+        return [request_headers.get('Dh-User'),True]
+    return [None,False]
 
 
 # Server route to automatically capture headers when the page is first loaded
@@ -347,7 +353,6 @@ def before_request():
     global request_headers
     request_headers = dict(request.headers)  # Capture headers before processing any request
 
-
-server = app.server 
-# if __name__=='__main__':
-#     app.run_server(debug=True, use_reloader=False,port=8080)
+#server = app.server 
+if __name__=='__main__':
+    app.run_server(debug=True,port=8080)
