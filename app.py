@@ -251,6 +251,7 @@ app.layout = html.Div(
             id = "loading_row",
             justify = "center"
         ),
+        html.P(id = "debug_text"),
         dbc.Tooltip(
             "Required input missing",
             id="submit_tooltip",
@@ -334,6 +335,7 @@ def flag_update(flag_cat):
 @app.callback(
     Output('submit_button','disabled'),
     Output('submit_tooltip','children'),
+    Output('debug_text','children'),
     Input('user','value'),
     Input('project','value'),
     Input('site','value'),
@@ -342,7 +344,7 @@ def flag_update(flag_cat):
     Input('timezone','value'),
     Input('flag_cat','value'),
     Input('flag','value'),
-    Input('Note','value'))
+    Input('note','value'))
     
 def button_update(user,project,site,instrument,startdt,timezone):
     
@@ -352,9 +354,11 @@ def button_update(user,project,site,instrument,startdt,timezone):
             instrument is None,
             startdt is None,
             timezone is None]):
-        return [True,"Required input missing"]
+        return [True,"Required input missing",
+                user+project+site+instrument+startdt+timezone]
     else:
-        return [False,"Ready to submit"]
+        return [False,"Ready to submit",
+                user+project+site+instrument+startdt+timezone]
 
 #%% Submit to database
 @app.callback(
@@ -426,7 +430,6 @@ def upload_log(n,site,instrument,project,startdt,timezone,useremail,note,flag):
 )
 def display_headers(_):
     if request_headers.get('Dh-User'):
-        print("test")
         return [request_headers.get('Dh-User'),True]
     return [None,False]
 
