@@ -13,12 +13,12 @@ from flask import request,session
 from datetime import datetime
 
 # Initialize the dash app as 'app'
-app = Dash(__name__,
-            external_stylesheets=[dbc.themes.SLATE],
-            requests_pathname_prefix="/app/QPW/",
-            routes_pathname_prefix="/app/QPW/")
 # app = Dash(__name__,
-#             external_stylesheets=[dbc.themes.SLATE])
+#             external_stylesheets=[dbc.themes.SLATE],
+#             requests_pathname_prefix="/app/QPW/",
+#             routes_pathname_prefix="/app/QPW/")
+app = Dash(__name__,
+            external_stylesheets=[dbc.themes.SLATE])
 
 # Global variable to store headers
 request_headers = {}
@@ -345,7 +345,7 @@ def flag_update(flag_cat):
     Input('flag','value'),
     Input('note','value'))
     
-def button_update(user,project,site,instrument,startdt,timezone):
+def button_update(user,project,site,instrument,startdt,timezone,flag_cat,flag,note):
     
     if any([user is None, 
             project is None,
@@ -354,10 +354,11 @@ def button_update(user,project,site,instrument,startdt,timezone):
             startdt is None,
             timezone is None]):
         return [True,"Required input missing",
-                user+project+site+instrument+startdt+timezone]
+                ["" if i is None else i for i in [user,project,site,instrument,startdt,timezone]]]
     else:
         return [False,"Ready to submit",
-                user+project+site+instrument+startdt+timezone]
+                ["" if i is None else i for i in [user,project,site,instrument,startdt,timezone]]]
+
 
 #%% Submit to database
 @app.callback(
@@ -443,6 +444,6 @@ def before_request():
 
 
 #%% Run The app
-server = app.server 
-# if __name__=='__main__':
-#     app.run_server(debug=True,port=8080)
+# server = app.server 
+if __name__=='__main__':
+    app.run_server(debug=True,port=8080)
