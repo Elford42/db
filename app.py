@@ -4,28 +4,30 @@ from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 import pandas as pd
 import numpy as np
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,text
 from credentials import sql_engine_string_generator
 import os
 from dotenv import load_dotenv 
 from copy import copy
 from flask import request,session
+from datetime import datetime
 
-# initialize the dash app as 'app'
+# Initialize the dash app as 'app'
+# app = Dash(__name__,
+#             external_stylesheets=[dbc.themes.SLATE],
+#             requests_pathname_prefix="/app/QPW/",
+#             routes_pathname_prefix="/app/QPW/")
 app = Dash(__name__,
-            external_stylesheets=[dbc.themes.SLATE],
-            requests_pathname_prefix="/app/QPW/",
-            routes_pathname_prefix="/app/QPW/")
-
+            external_stylesheets=[dbc.themes.SLATE])
 
 # Global variable to store headers
 request_headers = {}
 
 # conect to swapit and dcp databases
-sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_SWAPIT_DBNAME','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
+sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_SWAPIT_DBNAME','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
 swapit_sql_engine=create_engine(sql_engine_string)
 
-sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_DCP_DBNAME','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
+sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_DCP_DBNAME','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
 dcp_sql_engine=create_engine(sql_engine_string)
 
 
@@ -43,7 +45,7 @@ flag_table = pd.read_sql_query(
     dcp_sql_engine)
 
 
-# set up the app layout
+# Setup the app layout
 ## MOBILE
 app.layout = html.Div(
     children=[
@@ -174,7 +176,10 @@ app.layout = html.Div(
         dbc.Row([
             dbc.Col(
                 [dbc.Label(html.H2("Note")),
-                dbc.Input(placeholder="...", type="text"),
+                dbc.Input(
+                    placeholder="...", 
+                    id = "note",
+                    type="text"),
                 html.Br()],
                 width = 8
             )],
@@ -192,7 +197,7 @@ app.layout = html.Div(
                 ])),
                 dbc.Input(
                     placeholder="...",
-                    id = "datetime",
+                    id = "startdt",
                     type="datetime-local",
                     step="1"
                 )],
@@ -207,6 +212,7 @@ app.layout = html.Div(
             dbc.Col([
                 dcc.Dropdown(
                     options = ["UTC","EST","EDT"],
+                    value = "EST",
                     id = "timezone",
                     placeholder="Timezone",
                     optionHeight=50
@@ -232,6 +238,19 @@ app.layout = html.Div(
             justify = "center",
             className="d-grid gap-2"
         ),
+        dbc.Row([
+            dbc.Col([
+                html.Br(),
+                dcc.Loading(
+                    id="loading",
+                    type="default",
+                    children=html.Div(id="submit_button_loading")
+                )],
+                width = 8
+            )],
+            id = "loading_row",
+            justify = "center"
+        ),
         dbc.Tooltip(
             "Required input missing",
             id="submit_tooltip",
@@ -244,7 +263,7 @@ app.layout = html.Div(
 )
 
 
-# Select project callback
+#%% Select project callback
 @app.callback(
     Output('site_row', 'style'),
     Output('site','options'),
@@ -261,7 +280,7 @@ def project_update(project):
         return [{'display':'flex'},sites_filtered]
 
 
-# Site selection callback
+#%% Site selection callback
 @app.callback(
     Output('instrument_row', 'style'),
     Output('flagcat_row', 'style'),
@@ -296,7 +315,7 @@ def site_update(site,project):
     return return_list
         
 
-# Flag category selection callback
+#%% Flag category selection callback 
 @app.callback(
     Output('flag','options'),
     Input('flag_cat','value'))
@@ -309,7 +328,9 @@ def flag_update(flag_cat):
         flags = np.sort(flag_table.loc[flag_table["category"]==flag_cat]['description']).tolist()
     return flags
 
-# Activate submit button callback
+
+
+#%% Show submit button when all required inputs are put in
 @app.callback(
     Output('submit_button','disabled'),
     Output('submit_tooltip','children'),
@@ -317,22 +338,87 @@ def flag_update(flag_cat):
     Input('project','value'),
     Input('site','value'),
     Input('instrument','value'),
-    Input('datetime','value'),
-    Input('timezone','value'))
+    Input('startdt','value'),
+    Input('timezone','value'),
+    Input('flag_cat','value'),
+    Input('flag','value'),
+    Input('Note','value'))
     
-def button_update(user,project,site,instrument,datetime,timezone):
+def button_update(user,project,site,instrument,startdt,timezone):
     
     if any([user is None, 
             project is None,
             site is None,
             instrument is None,
-            datetime is None,
+            startdt is None,
             timezone is None]):
         return [True,"Required input missing"]
     else:
         return [False,"Ready to submit"]
 
-# Dash callback to update headers display on page load
+#%% Submit to database
+@app.callback(
+    Output('submit_button_loading','children'),
+    Output('submit_button_loading','style'),
+    Output('submit_button','disabled',allow_duplicate=True),
+    Output('submit_tooltip','children',allow_duplicate=True),
+    Input('submit_button', 'n_clicks'),
+    State('site','value'),
+    State('instrument','value'),
+    State('project','value'),
+    State('startdt','value'),
+    State('timezone','value'),
+    State('user','value'),
+    State('note','value'),
+    State('flag','value'),
+    prevent_initial_call=True
+)
+
+def upload_log(n,site,instrument,project,startdt,timezone,useremail,note,flag):
+    
+    # create db connection
+    conn = swapit_sql_engine.connect()
+    
+    # parse all variables going to db
+    siteid = sites[(sites['short_description']==site) &
+                   (sites['projectid']==project)]['siteid'].tolist()[0]
+    submitdt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    startdt = startdt.replace("T", " ")
+    try:
+        user = users['fullname'].loc[users['piemail'].str.lower()==useremail.lower()].values[0]
+    except:
+        user = useremail
+                
+    try:
+        # queries
+        tz_set_query = text("""SET TIME ZONE 'EST5EDT';""")
+       
+        InsertLog = text('''
+        INSERT INTO logs (station,datetime,loguser,logtype,startdt,enddt,field_comment,site_location,instrument,field_flag)
+        VALUES ('{0}', '{1}', '{2}','{3}',NULLIF('{4}','')::timestamp,NULLIF('{5}','')::timestamp,'{6}',NULLIF('{7}',''),NULLIF('{8}',''),NULLIF('{9}',''))
+        ON CONFLICT DO NOTHING;
+        '''.format(siteid,submitdt,
+        user,'FIELD', 
+        startdt,'', 
+        note.replace("'","''"),'', 
+        instrument,flag))
+        
+        conn.execute(tz_set_query)
+        conn.execute(InsertLog)
+        conn.commit()
+        
+        return ["Upload to database successful!",
+                {"color": "green","font-weight": "bold","font-size": "large"},
+                True,
+                "Submission complete!"]
+    except:
+        return ["Upload to database not successful!",
+                {"color": "red","font-weight": "bold","font-size": "large"},
+                False,
+                "Ready to submit"]
+        
+    
+#%% Callback to update user field based on page headers
 @app.callback(
     Output('user', 'value'),
     Output('user', 'disabled'),
@@ -345,12 +431,16 @@ def display_headers(_):
     return [None,False]
 
 
-# Server route to automatically capture headers when the page is first loaded
+
+#%% Server route to automatically capture headers when the page is first loaded
 @app.server.before_request
 def before_request():
     global request_headers
     request_headers = dict(request.headers)  # Capture headers before processing any request
 
-server = app.server 
-# if __name__=='__main__':
-#     app.run_server(debug=True,port=8080)
+
+
+#%% Run The app
+#server = app.server 
+if __name__=='__main__':
+    app.run_server(debug=True,port=8080)
