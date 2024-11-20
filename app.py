@@ -251,7 +251,6 @@ app.layout = html.Div(
             id = "loading_row",
             justify = "center"
         ),
-        html.P(id = "debug_text"),
         dbc.Tooltip(
             "Required input missing",
             id="submit_tooltip",
@@ -335,7 +334,7 @@ def flag_update(flag_cat):
 @app.callback(
     Output('submit_button','disabled'),
     Output('submit_tooltip','children'),
-    Output('debug_text','children'),
+    Output('note','value'),
     Input('user','value'),
     Input('project','value'),
     Input('site','value'),
