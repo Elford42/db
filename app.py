@@ -7,13 +7,18 @@ from sqlalchemy import create_engine,text
 from credentials import sql_engine_string_generator
 from flask import request
 from datetime import datetime
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
+import os
+from dotenv import load_dotenv 
 
 # initialize the dash app as 'app'
 app = Dash(__name__,
             external_stylesheets=[dbc.themes.SLATE],
             requests_pathname_prefix="/app/QPW/",
             routes_pathname_prefix="/app/QPW/")
-
+# app = Dash(__name__,
+#             external_stylesheets=[dbc.themes.SLATE])
 
 # Global variable to store headers
 request_headers = {}

@@ -28,9 +28,8 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
         # print(f"An error occurred: {e}")
 
         # load the .env file using the dotenv module remove this when running a powershell script to confirue system environment vars
-        parent_dir=os.path.dirname(os.getcwd())
-        load_dotenv(os.path.join(parent_dir, '.env')) # default is relative local directory 
-        env_path='.env'
+        parent_dir=os.getcwd()
+        load_dotenv(parent_dir+ '\\.env') # default is relative local directory 
         DB_HOST = os.getenv(datahub_host)
         DB_NAME = os.getenv(datahub_db)
         DB_USER = os.getenv(datahub_user)
