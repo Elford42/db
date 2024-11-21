@@ -13,9 +13,10 @@ from flask import request,session
 from datetime import datetime
 
 # Initialize the dash app as 'app'
-url_prefix = "/app/QPW/"
-app = Dash(__name__, url_base_pathname=url_prefix,
-            external_stylesheets=[dbc.themes.SLATE])
+app = Dash(__name__, 
+           requests_pathname_prefix="/app/QPW/",
+           routes_pathname_prefix="/app/QPW/",
+           external_stylesheets=[dbc.themes.SLATE])
 # app = Dash(__name__,
 #             external_stylesheets=[dbc.themes.SLATE])
 
