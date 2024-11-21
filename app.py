@@ -13,10 +13,9 @@ from flask import request,session
 from datetime import datetime
 
 # Initialize the dash app as 'app'
-app = Dash(__name__,
-            external_stylesheets=[dbc.themes.SLATE],
-            requests_pathname_prefix="/app/QPW/",
-            routes_pathname_prefix="/app/QPW/")
+url_prefix = "/app/QPW/"
+app = Dash(__name__, use_pages=True, url_base_pathname=url_prefix,
+            external_stylesheets=[dbc.themes.SLATE])
 # app = Dash(__name__,
 #             external_stylesheets=[dbc.themes.SLATE])
 
@@ -446,4 +445,4 @@ def before_request():
 #%% Run The app
 #server = app.server 
 if __name__=='__main__':
-    app.run_server(debug=True,port=8080)
+    app.run(debug=True, host='0.0.0.0', port=8080)
