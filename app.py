@@ -1,15 +1,11 @@
 from dash import Dash, html, dcc 
-from dash.exceptions import PreventUpdate
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine,text
 from credentials import sql_engine_string_generator
-import os
-from dotenv import load_dotenv 
-from copy import copy
-from flask import request,session
+from flask import request
 from datetime import datetime
 
 # initialize the dash app as 'app'
@@ -55,6 +51,7 @@ app.layout = html.Div(
             html.Span('Required fields indicated by '),
             html.Span('*',style={"color": "red","font-weight": "bold"})
         ]),
+        html.Span('v. 1.0'),
         html.Br(),
         
         # User
@@ -414,7 +411,10 @@ def upload_log(n,site,instrument,project,startdt,timezone,useremail,note,flag):
                 {"color": "green","font-weight": "bold","font-size": "large"},
                 True,
                 "Submission complete!"]
-    except:
+    except Exception as e:
+        
+        print(f"An error occurred: {e}")
+        
         return ["Upload to database not successful!",
                 {"color": "red","font-weight": "bold","font-size": "large"},
                 False,
