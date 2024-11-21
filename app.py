@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 import logging
 
 # Version number to display
-version = 1.1
+version = "1.1"
 
 # Setup logger
 if not os.path.exists('logs'):
