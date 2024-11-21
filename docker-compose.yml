@@ -1,9 +1,6 @@
 # docker-compose.yml
-version: '3.8'
-
 services:
-  web:
-    build: .
+  webapp:
     image: ghcr.io/arqpdatateam/log_template_app:latest
     container_name: log_template_app
     restart: always
