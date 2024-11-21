@@ -14,7 +14,7 @@ from datetime import datetime
 
 # Initialize the dash app as 'app'
 url_prefix = "/app/QPW/"
-app = Dash(__name__, use_pages=True, url_base_pathname=url_prefix,
+app = Dash(__name__, url_base_pathname=url_prefix,
             external_stylesheets=[dbc.themes.SLATE])
 # app = Dash(__name__,
 #             external_stylesheets=[dbc.themes.SLATE])
