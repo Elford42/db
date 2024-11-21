@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 import logging
 
 # Version number to display
-version = "1.1"
+version = "1.2"
 
 # Setup logger
 if not os.path.exists('logs'):
@@ -213,6 +213,7 @@ app.layout = html.Div(
                     html.Span('*',style={"color": "red","font-weight": "bold"})
                 ])),
                 dbc.Input(
+                    value = datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     placeholder="...",
                     id = "startdt",
                     type="datetime-local",
@@ -353,7 +354,6 @@ def flag_update(flag_cat):
 @app.callback(
     Output('submit_button','disabled'),
     Output('submit_tooltip','children'),
-    Output('note','value'),
     Input('user','value'),
     Input('project','value'),
     Input('site','value'),
@@ -372,11 +372,9 @@ def button_update(user,project,site,instrument,startdt,timezone,flag_cat,flag,no
             instrument is None,
             startdt is None,
             timezone is None]):
-        return [True,"Required input missing",
-                ["" if i is None else i for i in [user,project,site,instrument,startdt,timezone]]]
+        return [True,"Required input missing"]
     else:
-        return [False,"Ready to submit",
-                ["" if i is None else i for i in [user,project,site,instrument,startdt,timezone]]]
+        return [False,"Ready to submit"]
 
 
 #%% Submit to database
@@ -451,12 +449,14 @@ def upload_log(n,site,instrument,project,startdt,timezone,useremail,note,flag):
 @app.callback(
     Output('user', 'value'),
     Output('user', 'disabled'),
+    Output('user_row','style'),
     Input('user', 'id')  # This triggers the callback on page load
 )
 def display_headers(_):
     if request_headers.get('Dh-User'):
-        return [request_headers.get('Dh-User'),True]
-    return [None,False]
+        return [request_headers.get('Dh-User'),True,{'display':'none'}]
+    else:
+        return [None,False,{'display':'flex'}]
 
 
 
