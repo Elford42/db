@@ -11,6 +11,22 @@ from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 import os
 from dotenv import load_dotenv 
+import logging
+
+# Version number to display
+version = 1.1
+
+# Setup logger
+if not os.path.exists('logs'):
+    os.mkdir('logs')
+    
+logging.basicConfig(
+    format = '%(message)s',
+    filename='logs/log.log', 
+    filemode='w+',
+    level = 20)
+
+logging.getLogger("azure").setLevel(logging.ERROR)
 
 # initialize the dash app as 'app'
 app = Dash(__name__,
@@ -56,7 +72,7 @@ app.layout = html.Div(
             html.Span('Required fields indicated by '),
             html.Span('*',style={"color": "red","font-weight": "bold"})
         ]),
-        html.Span('v. 1.0'),
+        html.Span('v. '+version),
         html.Br(),
         
         # User
@@ -257,7 +273,9 @@ app.layout = html.Div(
             id="submit_tooltip",
             target="buttons_row",
             placement="bottom"
-        )
+        ),
+        html.Div(id='logs'),
+        dcc.Interval(id='log_updater',interval = 2000)
     
     ],
     style={'textAlign': 'center'}
@@ -389,6 +407,9 @@ def upload_log(n,site,instrument,project,startdt,timezone,useremail,note,flag):
                    (sites['projectid']==project)]['siteid'].tolist()[0]
     submitdt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     startdt = startdt.replace("T", " ")
+    if isinstance(note,list):
+        note = ','.join(note)
+        
     try:
         user = users['fullname'].loc[users['piemail'].str.lower()==useremail.lower()].values[0]
     except:
@@ -418,7 +439,7 @@ def upload_log(n,site,instrument,project,startdt,timezone,useremail,note,flag):
                 "Submission complete!"]
     except Exception as e:
         
-        print(f"An error occurred: {e}")
+        logging.exception(e)
         
         return ["Upload to database not successful!",
                 {"color": "red","font-weight": "bold","font-size": "large"},
@@ -444,6 +465,16 @@ def display_headers(_):
 def before_request():
     global request_headers
     request_headers = dict(request.headers)  # Capture headers before processing any request
+
+#%% Log print statements
+@app.callback(
+    Output('logs', 'children'),
+    Input('log_updater', 'n_intervals')  # This triggers the callback on page load
+)
+def update_log(n):
+    with open("logs/log.log","r") as log:
+        return log.read()
+
 
 server = app.server 
 # if __name__=='__main__':

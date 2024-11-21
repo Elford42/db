@@ -25,7 +25,7 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
     except Exception as e:
         # declare FSDH keys exception
         error_occur = True
-        # print(f"An error occurred: {e}")
+        print(f"An error occurred: {e}")
 
         # load the .env file using the dotenv module remove this when running a powershell script to confirue system environment vars
         parent_dir=os.getcwd()
@@ -34,7 +34,7 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
         DB_NAME = os.getenv(datahub_db)
         DB_USER = os.getenv(datahub_user)
         DB_PASS = os.getenv(datahub_pwd)
-        print ('Credentials loaded locally')
+        print('Credentials loaded locally')
 
     # set the sql engine string
     sql_engine_string=('postgresql://{}:{}@{}/{}?sslmode=require').format(DB_USER,DB_PASS,DB_HOST,DB_NAME)
