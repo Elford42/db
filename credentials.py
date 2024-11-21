@@ -2,9 +2,6 @@ from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 import os
 from dotenv import load_dotenv 
-import json
-import base64
-from flask import request
 
 def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_pwd): 
 
@@ -24,17 +21,16 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
         DB_USER = secret_client.get_secret(datahub_user).value
         DB_PASS = secret_client.get_secret(datahub_pwd).value
         print ('Credentials loaded from FSDH')
-        
 
     except Exception as e:
-        
         # declare FSDH keys exception
         error_occur = True
-        print(f"An error occurred: {e}")
+        # print(f"An error occurred: {e}")
 
         # load the .env file using the dotenv module remove this when running a powershell script to confirue system environment vars
-        load_dotenv() # default is relative local directory 
-        
+        parent_dir=os.path.dirname(os.getcwd())
+        load_dotenv(os.path.join(parent_dir, '.env')) # default is relative local directory 
+        env_path='.env'
         DB_HOST = os.getenv(datahub_host)
         DB_NAME = os.getenv(datahub_db)
         DB_USER = os.getenv(datahub_user)
@@ -43,6 +39,5 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
 
     # set the sql engine string
     sql_engine_string=('postgresql://{}:{}@{}/{}?sslmode=require').format(DB_USER,DB_PASS,DB_HOST,DB_NAME)
-    print ('sql engine string: ',sql_engine_string)
     return sql_engine_string
-        
+
