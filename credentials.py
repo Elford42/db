@@ -8,7 +8,7 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
     # set a try except clause to grab the online credentials keys and if not, grab them locally as environment variables
     try:
         # set the key vault path
-        KEY_VAULT_URL = "https://fsdh-swapit-dw1-poc-kv.vault.azure.net/"
+        KEY_VAULT_URL = "https://fsdh-proj-aqpd-prd-kv.vault.azure.net/"
         error_occur = False
 
         # Retrieve the secrets containing DB connection details
@@ -17,7 +17,7 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
 
         # Retrieve the secrets containing DB connection details
         DB_HOST = secret_client.get_secret(datahub_host).value
-        DB_NAME = secret_client.get_secret(datahub_db).value
+        DB_NAME = datahub_db
         DB_USER = secret_client.get_secret(datahub_user).value
         DB_PASS = secret_client.get_secret(datahub_pwd).value
         print ('Credentials loaded from FSDH')
@@ -31,7 +31,7 @@ def sql_engine_string_generator(datahub_host, datahub_db, datahub_user, datahub_
         parent_dir=os.getcwd()
         load_dotenv(parent_dir+ '\\.env') # default is relative local directory 
         DB_HOST = os.getenv(datahub_host)
-        DB_NAME = os.getenv(datahub_db)
+        DB_NAME = datahub_db
         DB_USER = os.getenv(datahub_user)
         DB_PASS = os.getenv(datahub_pwd)
         print('Credentials loaded locally')

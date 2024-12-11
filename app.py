@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 import logging
 
 # Version number to display
-version = "1.2"
+version = "1.3"
 
 # Setup logger
 if not os.path.exists('logs'):
@@ -28,7 +28,7 @@ logging.basicConfig(
 
 logging.getLogger("azure").setLevel(logging.ERROR)
 
-# initialize the dash app as 'app'
+#initialize the dash app as 'app'
 app = Dash(__name__,
             external_stylesheets=[dbc.themes.SLATE],
             requests_pathname_prefix="/app/QPW/",
@@ -39,249 +39,260 @@ app = Dash(__name__,
 # Global variable to store headers
 request_headers = {}
 
-# conect to swapit and dcp databases
-sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_SWAPIT_DBNAME','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
-swapit_sql_engine=create_engine(sql_engine_string)
+# # Get connection string
+# sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_SWAPIT_DBNAME','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
+# swapit_sql_engine=create_engine(sql_engine_string)
 
-sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_DCP_DBNAME','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
+sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','dcp','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
 dcp_sql_engine=create_engine(sql_engine_string)
-
-
-# pull required data from tables
-users = pd.read_sql_table("users", dcp_sql_engine)
-sites = pd.read_sql_query(
-    "select * from stations", 
-    dcp_sql_engine)
-instruments = pd.read_sql_query(
-    "select * from instrument_history where active = 'True'", 
-    dcp_sql_engine)
-projects = np.sort(instruments['projectid'].dropna().unique())
-flag_table = pd.read_sql_query(
-    "select * from flags", 
-    dcp_sql_engine)
 
 
 # Setup the app layout
 ## MOBILE
-app.layout = html.Div(
-    children=[
-        
-        #title + instructions
-        html.H1('QP Field Log'),
-        html.Div([
-            html.Span('Required fields indicated by '),
-            html.Span('*',style={"color": "red","font-weight": "bold"})
-        ]),
-        html.Span('v. '+version),
-        html.Br(),
-        
-        # User
-        dbc.Row([
-            dbc.Col(
-                [dbc.Label(html.H2([
-                    "User",
-                    html.Span('*',style={"color": "red","font-weight": "bold"})
-                ])),
-                html.Br(),
-                dcc.Input(
-                    style={'textAlign': 'center'},
-                    id = "user",
-                    placeholder="...",
-                ),
-                html.Br()],
-                width = 8
-            )],
-            id = "user_row",
-            justify = "center"
-        ),
-        
-        # Project
-        dbc.Row([
-            dbc.Col(
-                [dbc.Label(html.H2([
-                    "Project",
-                    html.Span('*',style={"color": "red","font-weight": "bold"})
-                ])),
-                dcc.Dropdown(
-                    projects.tolist(),
-                    id = "project",
-                    placeholder="..."
-                ),
-                html.Br()],
-                width = 8
-            )],
-            id = "project_row",
-            justify = "center"
-        ),
-        
-        # Site
-        dbc.Row([
-            dbc.Col(
-                [dbc.Label(html.H2([
-                    "Site",
-                    html.Span('*',style={"color": "red","font-weight": "bold"})
-                ])),
-                dcc.Dropdown(
-                    id = "site",
-                    placeholder="...",
-                    optionHeight=50
-                ),
-                html.Br()],
-                width = 8
-            )],
-            id = "site_row",
-            justify = "center",
-            style={'display':'none'}
-        ),
-        
-        # Instrument
-        dbc.Row([
-            dbc.Col(
-                [dbc.Label(html.H2([
-                    "Instrument",
-                    html.Span('*',style={"color": "red","font-weight": "bold"})
-                ])),
-                dcc.Dropdown(
-                    id = "instrument",
-                    placeholder="...",
-                    optionHeight=50
-                ),
-                html.Br()],
-                width = 8
-            )],
-            id = "instrument_row",
-            justify = "center",
-            style={'display':'none'}
-        ),
-        
-        # Flag Category
-        dbc.Row([
-            dbc.Col(
-                [dbc.Label(html.H2("Flag Category")),
-                dcc.Dropdown(
-                    options=list(set(flag_table['category'].tolist())),
-                    id = "flag_cat",
-                    placeholder="...",
-                    optionHeight=50
-                ),
-                html.Br()],
-                width = 8
-            )],
-            id = "flagcat_row",
-            justify = "center",
-            style={'display':'none'}
-        ),
-        
-        # Flag
-        dbc.Row([
-            dbc.Col(
-                [dbc.Label(html.H2("Flag")),
-                dcc.Dropdown(
-                    id = "flag",
-                    placeholder="...",
-                    optionHeight=50
-                ),
-                html.Br()],
-                width = 8
-            )],
-            id = "flag_row",
-            justify = "center",
-            style={'display':'none'}
-        ),
-        
-        # Note
-        dbc.Row([
-            dbc.Col(
-                [dbc.Label(html.H2("Note")),
-                dbc.Input(
-                    placeholder="...", 
-                    id = "note",
-                    type="text"),
-                html.Br()],
-                width = 8
-            )],
-            id = "note_row",
-            justify = "center",
-            style={'display':'none'}
-        ),
-        
-        # Date and time
-        dbc.Row([
-            dbc.Col(
-                [dbc.Label(html.H2([
-                    "Datetime",
-                    html.Span('*',style={"color": "red","font-weight": "bold"})
-                ])),
-                dbc.Input(
-                    value = datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    placeholder="...",
-                    id = "startdt",
-                    type="datetime-local",
-                    step="1"
-                )],
-                width = 8
-            )],
-            id = "date_row",
-            justify = "center",
-            style={'display':'none'}
-        ),
-        
-        dbc.Row([
-            dbc.Col([
-                dcc.Dropdown(
-                    options = ["UTC","EST","EDT"],
-                    value = "EST",
-                    id = "timezone",
-                    placeholder="Timezone",
-                    optionHeight=50
-                ),
-                html.Br()],
-                width = 4
-            )],
-            id = "tz_row",
-            justify = "center",
-            style={'display':'none'}
-        ),
-        dbc.Row([
-            dbc.Col([
-                dbc.Button(
-                    "Submit",
-                    id = "submit_button",
-                    color="info", 
-                    disabled=True),
-                html.Br()],
-                width = 4
-            )],
-            id = "buttons_row",
-            justify = "center",
-            className="d-grid gap-2"
-        ),
-        dbc.Row([
-            dbc.Col([
-                html.Br(),
-                dcc.Loading(
-                    id="loading",
-                    type="default",
-                    children=html.Div(id="submit_button_loading")
-                )],
-                width = 8
-            )],
-            id = "loading_row",
-            justify = "center"
-        ),
-        dbc.Tooltip(
-            "Required input missing",
-            id="submit_tooltip",
-            target="buttons_row",
-            placement="bottom"
-        ),
-        html.Div(id='logs'),
-        dcc.Interval(id='log_updater',interval = 2000)
+def serve_layout():
     
-    ],
-    style={'textAlign': 'center'}
-)
-
+    global users
+    global sites
+    global instruments
+    global projects
+    global flag_table
+    # pull required data from tables
+    databases = pd.read_sql_table("databases",dcp_sql_engine)
+    users = pd.read_sql_table("users", dcp_sql_engine)
+    sites = pd.read_sql_query(
+        "select * from stations", 
+        dcp_sql_engine)
+    instruments = pd.read_sql_query(
+        "select * from instrument_history where active = 'True'", 
+        dcp_sql_engine)
+    projects = np.sort(instruments['projectid'].dropna().unique())
+    flag_table = pd.read_sql_query(
+        "select * from flags", 
+        dcp_sql_engine)
+    
+    dcp_sql_engine.dispose()
+    
+    
+    return(
+        html.Div(
+            children=[
+                
+                #title + instructions
+                html.H1('QP Field Log'),
+                html.Div([
+                    html.Span('Required fields indicated by '),
+                    html.Span('*',style={"color": "red","font-weight": "bold"})
+                ]),
+                html.Span('v. '+version),
+                html.Br(),
+                
+                # User
+                dbc.Row([
+                    dbc.Col(
+                        [dbc.Label(html.H2([
+                            "User",
+                            html.Span('*',style={"color": "red","font-weight": "bold"})
+                        ])),
+                        html.Br(),
+                        dcc.Input(
+                            style={'textAlign': 'center'},
+                            id = "user",
+                            placeholder="...",
+                        ),
+                        html.Br()],
+                        width = 8
+                    )],
+                    id = "user_row",
+                    justify = "center"
+                ),
+                
+                # Project
+                dbc.Row([
+                    dbc.Col(
+                        [dbc.Label(html.H2([
+                            "Project",
+                            html.Span('*',style={"color": "red","font-weight": "bold"})
+                        ])),
+                        dcc.Dropdown(
+                            projects.tolist(),
+                            id = "project",
+                            placeholder="..."
+                        ),
+                        html.Br()],
+                        width = 8
+                    )],
+                    id = "project_row",
+                    justify = "center"
+                ),
+                
+                # Site
+                dbc.Row([
+                    dbc.Col(
+                        [dbc.Label(html.H2([
+                            "Site",
+                            html.Span('*',style={"color": "red","font-weight": "bold"})
+                        ])),
+                        dcc.Dropdown(
+                            id = "site",
+                            placeholder="...",
+                            optionHeight=50
+                        ),
+                        html.Br()],
+                        width = 8
+                    )],
+                    id = "site_row",
+                    justify = "center",
+                    style={'display':'none'}
+                ),
+                
+                # Instrument
+                dbc.Row([
+                    dbc.Col(
+                        [dbc.Label(html.H2([
+                            "Instrument",
+                            html.Span('*',style={"color": "red","font-weight": "bold"})
+                        ])),
+                        dcc.Dropdown(
+                            id = "instrument",
+                            placeholder="...",
+                            optionHeight=50
+                        ),
+                        html.Br()],
+                        width = 8
+                    )],
+                    id = "instrument_row",
+                    justify = "center",
+                    style={'display':'none'}
+                ),
+                
+                # Flag Category
+                dbc.Row([
+                    dbc.Col(
+                        [dbc.Label(html.H2("Flag Category")),
+                        dcc.Dropdown(
+                            options=list(set(flag_table['category'].tolist())),
+                            id = "flag_cat",
+                            placeholder="...",
+                            optionHeight=50
+                        ),
+                        html.Br()],
+                        width = 8
+                    )],
+                    id = "flagcat_row",
+                    justify = "center",
+                    style={'display':'none'}
+                ),
+                
+                # Flag
+                dbc.Row([
+                    dbc.Col(
+                        [dbc.Label(html.H2("Flag")),
+                        dcc.Dropdown(
+                            id = "flag",
+                            placeholder="...",
+                            optionHeight=50
+                        ),
+                        html.Br()],
+                        width = 8
+                    )],
+                    id = "flag_row",
+                    justify = "center",
+                    style={'display':'none'}
+                ),
+                
+                # Note
+                dbc.Row([
+                    dbc.Col(
+                        [dbc.Label(html.H2("Note")),
+                        dbc.Input(
+                            placeholder="...", 
+                            id = "note",
+                            type="text"),
+                        html.Br()],
+                        width = 8
+                    )],
+                    id = "note_row",
+                    justify = "center",
+                    style={'display':'none'}
+                ),
+                
+                # Date and time
+                dbc.Row([
+                    dbc.Col(
+                        [dbc.Label(html.H2([
+                            "Datetime",
+                            html.Span('*',style={"color": "red","font-weight": "bold"})
+                        ])),
+                        dbc.Input(
+                            value = datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            placeholder="...",
+                            id = "startdt",
+                            type="datetime-local",
+                            step="1"
+                        )],
+                        width = 8
+                    )],
+                    id = "date_row",
+                    justify = "center",
+                    style={'display':'none'}
+                ),
+                
+                dbc.Row([
+                    dbc.Col([
+                        dcc.Dropdown(
+                            options = ["UTC","EST","EDT"],
+                            value = "EST",
+                            id = "timezone",
+                            placeholder="Timezone",
+                            optionHeight=50
+                        ),
+                        html.Br()],
+                        width = 4
+                    )],
+                    id = "tz_row",
+                    justify = "center",
+                    style={'display':'none'}
+                ),
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Button(
+                            "Submit",
+                            id = "submit_button",
+                            color="info", 
+                            disabled=True),
+                        html.Br()],
+                        width = 4
+                    )],
+                    id = "buttons_row",
+                    justify = "center",
+                    className="d-grid gap-2"
+                ),
+                dbc.Row([
+                    dbc.Col([
+                        html.Br(),
+                        dcc.Loading(
+                            id="loading",
+                            type="default",
+                            children=html.Div(id="submit_button_loading")
+                        )],
+                        width = 8
+                    )],
+                    id = "loading_row",
+                    justify = "center"
+                ),
+                dbc.Tooltip(
+                    "Required input missing",
+                    id="submit_tooltip",
+                    target="buttons_row",
+                    placement="bottom"
+                ),
+                html.Div(id='logs'),
+                dcc.Interval(id='log_updater',interval = 2000)
+            
+            ],
+            style={'textAlign': 'center'}
+        )
+    )
 
 #%% Select project callback
 @app.callback(
@@ -397,52 +408,58 @@ def button_update(user,project,site,instrument,startdt,timezone,flag_cat,flag,no
 
 def upload_log(n,site,instrument,project,startdt,timezone,useremail,note,flag):
     
-    # create db connection
-    conn = swapit_sql_engine.connect()
     
-    # parse all variables going to db
-    siteid = sites[(sites['short_description']==site) &
-                   (sites['projectid']==project)]['siteid'].tolist()[0]
-    submitdt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    startdt = startdt.replace("T", " ")
-    if isinstance(note,list):
-        note = ','.join(note)
-        
-    try:
-        user = users['fullname'].loc[users['piemail'].str.lower()==useremail.lower()].values[0]
-    except:
-        user = useremail
-                
-    try:
-        # queries
-        tz_set_query = text("""SET TIME ZONE 'EST5EDT';""")
-       
-        InsertLog = text('''
-        INSERT INTO logs (station,datetime,loguser,logtype,startdt,enddt,field_comment,site_location,instrument,field_flag)
-        VALUES ('{0}', '{1}', '{2}','{3}',NULLIF('{4}','')::timestamp,NULLIF('{5}','')::timestamp,'{6}',NULLIF('{7}',''),NULLIF('{8}',''),NULLIF('{9}',''))
-        ON CONFLICT DO NOTHING;
-        '''.format(siteid,submitdt,
-        user,'FIELD', 
-        startdt,'', 
-        note.replace("'","''"),'', 
-        instrument,flag))
-        
-        conn.execute(tz_set_query)
-        conn.execute(InsertLog)
-        conn.commit()
-        
-        return ["Upload to database successful!",
-                {"color": "green","font-weight": "bold","font-size": "large"},
-                True,
-                "Submission complete!"]
-    except Exception as e:
-        
-        logging.exception(e)
-        
-        return ["Upload to database not successful!",
-                {"color": "red","font-weight": "bold","font-size": "large"},
-                False,
-                "Ready to submit"]
+    
+    
+    sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','borden','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
+    sql_engine=create_engine(sql_engine_string)
+    
+    # create db connection
+    with sql_engine.connect() as conn:
+    
+        # parse all variables going to db
+        siteid = sites[(sites['short_description']==site) &
+                       (sites['projectid']==project)]['siteid'].tolist()[0]
+        submitdt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        startdt = startdt.replace("T", " ")
+        if isinstance(note,list):
+            note = ','.join(note)
+            
+        try:
+            user = users['fullname'].loc[users['piemail'].str.lower()==useremail.lower()].values[0]
+        except:
+            user = useremail
+                    
+        try:
+            # queries
+            tz_set_query = text("""SET TIME ZONE 'EST5EDT';""")
+           
+            InsertLog = text('''
+            INSERT INTO logs (station,datetime,loguser,logtype,startdt,enddt,field_comment,site_location,instrument,field_flag)
+            VALUES ('{0}', '{1}', '{2}','{3}',NULLIF('{4}','')::timestamp,NULLIF('{5}','')::timestamp,'{6}',NULLIF('{7}',''),NULLIF('{8}',''),NULLIF('{9}',''))
+            ON CONFLICT DO NOTHING;
+            '''.format(siteid,submitdt,
+            user,'FIELD', 
+            startdt,'', 
+            note.replace("'","''"),'', 
+            instrument,flag))
+            
+            conn.execute(tz_set_query)
+            conn.execute(InsertLog)
+            conn.commit()
+            
+            return ["Upload to database successful!",
+                    {"color": "green","font-weight": "bold","font-size": "large"},
+                    True,
+                    "Submission complete!"]
+        except Exception as e:
+            
+            logging.exception(e)
+            
+            return ["Upload to database not successful!",
+                    {"color": "red","font-weight": "bold","font-size": "large"},
+                    False,
+                    "Ready to submit"]
         
     
 #%% Callback to update user field based on page headers
@@ -475,6 +492,7 @@ def update_log(n):
     with open("logs/log.log","r") as log:
         return log.read()
 
+app.layout = serve_layout
 
 server = app.server 
 # if __name__=='__main__':
