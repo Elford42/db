@@ -31,8 +31,8 @@ logging.getLogger("azure").setLevel(logging.ERROR)
 #initialize the dash app as 'app'
 app = Dash(__name__,
             external_stylesheets=[dbc.themes.SLATE],
-            requests_pathname_prefix="/app/AQPD/",
-            routes_pathname_prefix="/app/AQPD/")
+            requests_pathname_prefix="/app/AQPDDEV/",
+            routes_pathname_prefix="/app/AQPDDEV/")
 # app = Dash(__name__,
 #             external_stylesheets=[dbc.themes.SLATE])
 
