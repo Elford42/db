@@ -39,6 +39,8 @@ app = Dash(__name__,
 # Global variable to store headers
 request_headers = {}
 
+print ( 'DATAHUB_PSQL_SERVER' )
+
 # # Get connection string
 # sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_SWAPIT_DBNAME','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
 # swapit_sql_engine=create_engine(sql_engine_string)
