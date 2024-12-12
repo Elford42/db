@@ -80,6 +80,7 @@ def serve_layout():
             children=[
                 
                 #title + instructions
+                html.H1('DATAHUB_PSQL_SERVER'),
                 html.H1('QP Field Log'),
                 html.Div([
                     html.Span('Required fields indicated by '),
@@ -301,6 +302,7 @@ def serve_layout():
     Output('site_row', 'style'),
     Output('site','options'),
     Input('project','value'))
+
 def project_update(project):
     
     # sites for selected project
@@ -324,6 +326,7 @@ def project_update(project):
     Output('instrument','options'),
     Input('site','value'),
     State('project','value'))
+
 def site_update(site,project):
     
     # show all remaining rows
