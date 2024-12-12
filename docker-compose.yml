@@ -4,7 +4,7 @@ version: '3.8'
 services:
   web:
     build: .
-    image: ghcr.io/Elford42/db:latest
+    image: ghcr.io/elford42/db:latest
     container_name: db
     ports:
       - "80:8080"
