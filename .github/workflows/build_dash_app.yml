@@ -27,7 +27,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/arqpdatateam/log_template_app:latest
+          tags: ghcr.io/elford42/db:latest
 
       - name: Logout of GitHub Container Registry
         run: docker logout ghcr.io
