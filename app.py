@@ -50,7 +50,7 @@ sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','dcp','DATAH
 
 print ( sql_engine_string )
 
-app.layout = [html.Div(children='Hello World')]
+app.layout = [html.Div(children='SQL: ' + sql_engine_string)]
 
 server = app.server 
 # if __name__=='__main__':
