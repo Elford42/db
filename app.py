@@ -46,7 +46,7 @@ print ( 'DATAHUB_PSQL_SERVER' )
 # sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_SWAPIT_DBNAME','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
 # swapit_sql_engine=create_engine(sql_engine_string)
 
-sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','dcp','DATAHUB_PSQL_USER','DATAHUB_PSQL_READPASSWORD')
+sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','dcp','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
 # dcp_sql_engine=create_engine(sql_engine_string)
 
 app.layout = [html.Div(children='SQL: ' + sql_engine_string)]
