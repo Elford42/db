@@ -69,11 +69,11 @@ except Exception as e:
     error_occur = True
     print(f"An error occurred: {e}")
 
-for secret_properties in secret_client.list_properties_of_secrets():
-    print(secret_properties.name)
+# for secret_properties in secret_client.list_properties_of_secrets():
+#     print(secret_properties.name)
 
 ## + secret_client.list_properties_of_secrets()
-app.layout = [ html.Div(children=' HELLO WORLD' ) ]
+app.layout = [ html.Div(children=' HELLO WORLD ' + DB_HOST ) ]
 
 server = app.server 
 # if __name__=='__main__':
