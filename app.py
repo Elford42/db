@@ -72,7 +72,8 @@ except Exception as e:
 for secret_properties in secret_client.list_properties_of_secrets():
     print(secret_properties.name)
 
-app.layout = [html.Div(children='SQL: ' + secret_client.list_properties_of_secrets())]
+## + secret_client.list_properties_of_secrets()
+app.layout = [ html.Div(children=' HELLO WORLD' ) ]
 
 server = app.server 
 # if __name__=='__main__':
