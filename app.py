@@ -46,10 +46,33 @@ print ( 'DATAHUB_PSQL_SERVER' )
 # sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_SWAPIT_DBNAME','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
 # swapit_sql_engine=create_engine(sql_engine_string)
 
-sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','dcp','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
+#sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','dcp','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
 # dcp_sql_engine=create_engine(sql_engine_string)
 
-app.layout = [html.Div(children='SQL: ' + sql_engine_string)]
+try:
+    # set the key vault path
+    KEY_VAULT_URL = "https://fsdh-proj-aqpd-prd-kv.vault.azure.net/"
+    error_occur = False
+
+    # Retrieve the secrets containing DB connection details
+    credential = DefaultAzureCredential()
+    secret_client = SecretClient(vault_url=KEY_VAULT_URL, credential=credential)
+
+    # Retrieve the secrets containing DB connection details
+    DB_HOST = secret_client.get_secret('DATAHUB_PSQL_SERVER').value
+    DB_USER = secret_client.get_secret('DATAHUB_PSQL_USER').value
+    DB_PASS = secret_client.get_secret('DATAHUB_PSQL_PASSWORD').value
+    print ('Credentials loaded from FSDH')
+
+except Exception as e:
+    # declare FSDH keys exception
+    error_occur = True
+    print(f"An error occurred: {e}")
+
+for secret_properties in secret_client.list_properties_of_secrets():
+    print(secret_properties.name)
+
+app.layout = [html.Div(children='SQL: ' + secret_client.list_properties_of_secrets())]
 
 server = app.server 
 # if __name__=='__main__':
