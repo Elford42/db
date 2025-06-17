@@ -51,7 +51,7 @@ print ( 'DATAHUB_PSQL_SERVER' )
 
 try:
     # set the key vault path
-    KEY_VAULT_URL = "https://fsdh-proj-aqpd-prd-kv.vault.azure.net/"
+    KEY_VAULT_URL = "https://fsdh-proj-aqpddev-prd-kv.vault.azure.net/"
     error_occur = False
 
     # Retrieve the secrets containing DB connection details
