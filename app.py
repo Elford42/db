@@ -40,7 +40,7 @@ app = Dash(__name__,
 # Global variable to store headers
 request_headers = {}
 
-print ( 'DATAHUB_PSQL_SERVER' )
+print ( 'python print: DATAHUB_PSQL_SERVER' )
 
 # # Get connection string
 # sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_SWAPIT_DBNAME','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
@@ -73,12 +73,18 @@ except Exception as e:
     print(f"An error occurred: {e}")
     MSG = f"An error occurred: {e}"
 
+print ( 'python print: after kv try' )
+
 # for secret_properties in secret_client.list_properties_of_secrets():
 #     print(secret_properties.name)
 
 ## + secret_client.list_properties_of_secrets()
 app.layout = [ html.Div(children=' HELLO WORLD ' + MSG ) ]
 
+print ( 'python print: after app layout' )
+
 server = app.server 
 # if __name__=='__main__':
 #     app.run_server(debug=True,port=8080)
+
+print ( 'python print: after app loaded' )
