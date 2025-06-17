@@ -1,14 +1,14 @@
 from dash import Dash, html, dcc 
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-import pandas as pd
-import numpy as np
+# import pandas as pd
+# import numpy as np
 from sqlalchemy import create_engine,text
 from credentials import sql_engine_string_generator
 from flask import request
 from datetime import datetime
-from azure.identity import DefaultAzureCredential
-from azure.keyvault.secrets import SecretClient
+# from azure.identity import DefaultAzureCredential
+# from azure.keyvault.secrets import SecretClient
 import os
 from dotenv import load_dotenv 
 import logging
