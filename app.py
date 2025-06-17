@@ -49,10 +49,12 @@ print ( 'python print: DATAHUB_PSQL_SERVER' )
 #sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','dcp','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
 # dcp_sql_engine=create_engine(sql_engine_string)
 
-MSG = " TESTING fsdh-proj-aqpd-prd-kv.vault.azure.net<BR>\n"
+MSG = " PYTHON START\n"
 
 try:
     DB_HOST = os.getenv('DATAHUB_PSQL_SERVER')
+    DB_USER = os.getenv('DATAHUB_PSQL_USER')
+    DB_PASS = os.getenv('DATAHUB_PSQL_PASSWORD')
 
     # set the key vault path
     # KEY_VAULT_URL = "https://fsdh-proj-aqpd-prd-kv.vault.azure.net/"
@@ -67,8 +69,12 @@ try:
     # DB_USER = secret_client.get_secret('DATAHUB_PSQL_USER').value
     # DB_PASS = secret_client.get_secret('DATAHUB_PSQL_PASSWORD').value
     # print ('Credentials loaded from FSDH')
+    MSG += "DB_HOST: "
     MSG += DB_HOST
-    MSG += "\n"
+    MSG += " :: \n"
+    MSG += "DB_USER: "
+    MSG += DB_USER
+    MSG += " :: \n"
 
 except Exception as e:
     # declare FSDH keys exception
