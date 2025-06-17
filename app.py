@@ -88,7 +88,7 @@ print ( 'python print: after kv try' )
 #     print(secret_properties.name)
 
 ## + secret_client.list_properties_of_secrets()
-app.layout = [ html.Div(children=' HELLO WORLD ' + MSG ) ]
+app.layout = [ html.Div(children= MSG ) ]
 
 print ( 'python print: after app layout' )
 
