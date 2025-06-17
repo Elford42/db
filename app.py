@@ -49,7 +49,7 @@ print ( 'DATAHUB_PSQL_SERVER' )
 #sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','dcp','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
 # dcp_sql_engine=create_engine(sql_engine_string)
 
-DB_HOST = ''
+MSG = ''
 
 try:
     # set the key vault path
@@ -65,17 +65,19 @@ try:
     DB_USER = secret_client.get_secret('DATAHUB_PSQL_USER').value
     DB_PASS = secret_client.get_secret('DATAHUB_PSQL_PASSWORD').value
     print ('Credentials loaded from FSDH')
+    MSG = DB_HOST
 
 except Exception as e:
     # declare FSDH keys exception
     error_occur = True
     print(f"An error occurred: {e}")
+    MSG = f"An error occurred: {e}"
 
 # for secret_properties in secret_client.list_properties_of_secrets():
 #     print(secret_properties.name)
 
 ## + secret_client.list_properties_of_secrets()
-app.layout = [ html.Div(children=' HELLO WORLD ' + DB_HOST ) ]
+app.layout = [ html.Div(children=' HELLO WORLD ' + MSG ) ]
 
 server = app.server 
 # if __name__=='__main__':
