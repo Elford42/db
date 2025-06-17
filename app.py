@@ -49,22 +49,24 @@ print ( 'python print: DATAHUB_PSQL_SERVER' )
 #sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','dcp','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
 # dcp_sql_engine=create_engine(sql_engine_string)
 
-MSG = " TESTING fsdh-proj-aqpd-prd-kv.vault.azure.net\n"
+MSG = " TESTING fsdh-proj-aqpd-prd-kv.vault.azure.net<BR>\n"
 
 try:
+    DB_HOST = os.getenv('DATAHUB_PSQL_SERVER')
+
     # set the key vault path
-    KEY_VAULT_URL = "https://fsdh-proj-aqpd-prd-kv.vault.azure.net/"
-    error_occur = False
+    # KEY_VAULT_URL = "https://fsdh-proj-aqpd-prd-kv.vault.azure.net/"
+    # error_occur = False
 
-    # Retrieve the secrets containing DB connection details
-    credential = DefaultAzureCredential()
-    secret_client = SecretClient(vault_url=KEY_VAULT_URL, credential=credential)
+    # # Retrieve the secrets containing DB connection details
+    # credential = DefaultAzureCredential()
+    # secret_client = SecretClient(vault_url=KEY_VAULT_URL, credential=credential)
 
-    # Retrieve the secrets containing DB connection details
-    DB_HOST = secret_client.get_secret('DATAHUB_PSQL_SERVER').value
-    DB_USER = secret_client.get_secret('DATAHUB_PSQL_USER').value
-    DB_PASS = secret_client.get_secret('DATAHUB_PSQL_PASSWORD').value
-    print ('Credentials loaded from FSDH')
+    # # Retrieve the secrets containing DB connection details
+    # DB_HOST = secret_client.get_secret('DATAHUB_PSQL_SERVER').value
+    # DB_USER = secret_client.get_secret('DATAHUB_PSQL_USER').value
+    # DB_PASS = secret_client.get_secret('DATAHUB_PSQL_PASSWORD').value
+    # print ('Credentials loaded from FSDH')
     MSG += DB_HOST
     MSG += "\n"
 
