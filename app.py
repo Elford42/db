@@ -101,11 +101,13 @@ except OperationalError as e:
 
 # app.layout = [ html.div( children = MSG ) ]
 
+# print ( fetch_table_list() )
+
 app.layout = html.Div([
     html.H1("SQL Database Test"),
     dash_table.DataTable(
         id='sql-data-table',
-        columns=[{"table_name": i} for i in fetch_table_list().columns],
+        columns=[{"name": i, "id": i} for i in fetch_table_list().columns],
         data=fetch_table_list().to_dict('records'),
         editable=False,  # Set to True if you want to allow editing in the table
         filter_action="native",
