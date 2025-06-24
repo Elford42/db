@@ -59,7 +59,7 @@ try:
 
     print(DB_HOST)
 
-    MSG += "DB_HOST: "
+    MSG += "<BR>DB_HOST: "
     MSG += DB_HOST
     MSG += " :: "
 
@@ -67,7 +67,7 @@ except Exception as e:
     # declare FSDH keys exception
     error_occur = True
     print(f"An error occurred trying to get ENV VARS: {e}")
-    MSG += f" :: An error occurred trying to get ENV VARS: {e}"
+    MSG += f"<BR> :: An error occurred trying to get ENV VARS: {e}"
 
 print ( 'python print: after credentials' )
 
@@ -75,7 +75,7 @@ print ( 'python print: after credentials' )
 
 db_url = "postgresql://" + DB_USER + ":" + DB_PASS + "@" + DB_HOST + ":5432/borden?sslmode=require"
 
-MSG += f" :: connecting to db: " + db_url
+MSG += f"<BR> :: connecting to db: " + db_url
  
 # Create engine
 engine = create_engine(db_url, pool_pre_ping=True)  # pool_pre_ping helps detect dead connections
@@ -85,15 +85,16 @@ sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='data
 try:
     with engine.connect() as connection:
         print("Connection successful!")
+        MSG += "<BR>Connection successful!"
         result = connection.execute(text( sql ))
         for row in result:
             print(row)
 
 except OperationalError as e:
     print(f"Connection failed: {e}")
-    MSG += f" :: An error occurred: {e}"
+    MSG += f"<BR> :: An error occurred: {e}"
 
-app.layout = [ html.Div(children= MSG ) ]
+app.layout = [ html.p( children = MSG ) ]
 
 print ( 'python print: after app layout' )
 

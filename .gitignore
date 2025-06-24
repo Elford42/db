@@ -3,3 +3,5 @@
 __pycache__
 *.bat
 /logs
+app.py.txt
+app.py1.txt
