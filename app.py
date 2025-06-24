@@ -103,6 +103,7 @@ except OperationalError as e:
 
 # print ( fetch_table_list() )
 
+#app.layout = dash_table.DataTable(df.to_dict('records'), [{"name": i, "id": i} for i in fetch_table_list().columns])
 app.layout = html.Div([
     html.H1("SQL Database Test"),
     dash_table.DataTable(
@@ -114,6 +115,12 @@ app.layout = html.Div([
         sort_action="native",
         page_action="native",
         page_size=100,
+            style_cell_conditional=[
+        {'if': {'column_id': 'table_name'},
+         'width': '30%',
+         'textAlign': 'left'
+         },
+        ]
     )
 ])
 
