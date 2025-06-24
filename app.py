@@ -49,7 +49,7 @@ app = Dash(__name__,
 # Global variable to store headers
 # request_headers = {}
 
-print ( 'python print: DATAHUB_PSQL_SERVER' )
+print ( 'python print: PYTHON START' )
 
 # # Get connection string
 # sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_SWAPIT_DBNAME','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
@@ -78,8 +78,6 @@ except Exception as e:
     MSG += f"<BR> :: An error occurred trying to get ENV VARS: {e}"
 
 print ( 'python print: after credentials' )
-
-## db_url = "postgresql://dcpweb:clean@fsdh-aqpd-psql-prd.postgres.database.azure.com:5432/borden?sslmode=require"
 
 db_url = "postgresql://" + DB_USER + ":" + DB_PASS + "@" + DB_HOST + ":5432/borden?sslmode=require"
 
@@ -132,13 +130,15 @@ app.layout = html.Div([
     )
 ])
 
-print ( 'python print: after app layout' )
+# print ( 'python print: after app layout' )
 
 # server = app.server 
 
 if not local:
+    ## FSDH cloud
     server = app.server
 else:
+    ## local dash
     if __name__=='__main__':
         app.run(debug=True,port=8080)
 
