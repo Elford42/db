@@ -39,7 +39,7 @@ app = Dash(__name__,
 #             external_stylesheets=[dbc.themes.SLATE])
 
 # Global variable to store headers
-# request_headers = {}
+request_headers = {}
 
 print ( 'python print: DATAHUB_PSQL_SERVER' )
 
@@ -58,6 +58,7 @@ try:
     DB_PASS = os.getenv('DATAHUB_PSQL_PASSWORD')
 
     print(DB_HOST)
+    print ('\n')
 
     MSG += "DB_HOST: "
     MSG += DB_HOST
@@ -66,29 +67,22 @@ try:
 except Exception as e:
     # declare FSDH keys exception
     error_occur = True
-    print(f"An error occurred trying to get ENV VARS: {e}")
-    MSG += f" :: An error occurred trying to get ENV VARS: {e}"
+    print(f"An error occurred: {e}")
+    MSG += f" :: An error occurred: {e}"
 
 print ( 'python print: after credentials' )
 
-## db_url = "postgresql://dcpweb:clean@fsdh-aqpd-psql-prd.postgres.database.azure.com:5432/borden?sslmode=require"
+db_url = "postgresql://dcpweb:clean@fsdh-aqpd-psql-prd.postgres.database.azure.com:5432/borden?sslmode=require"
 
 db_url = "postgresql://" + DB_USER + ":" + DB_PASS + "@" + DB_HOST + ":5432/borden?sslmode=require"
-
 MSG += f" :: connecting to db: " + db_url
  
 # Create engine
 engine = create_engine(db_url, pool_pre_ping=True)  # pool_pre_ping helps detect dead connections
-
-sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='data';"
   
 try:
     with engine.connect() as connection:
         print("Connection successful!")
-        result = connection.execute(text( sql ))
-        for row in result:
-            print(row)
-
 except OperationalError as e:
     print(f"Connection failed: {e}")
     MSG += f" :: An error occurred: {e}"
