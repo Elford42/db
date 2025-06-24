@@ -80,10 +80,10 @@ MSG += f"<BR> :: connecting to db: " + db_url
 # Create engine
 engine = create_engine(db_url, pool_pre_ping=True)  # pool_pre_ping helps detect dead connections
 
-sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='data';"
+# sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='data';"
   
 def fetch_table_list():
-    sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='data';"
+    sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='data' ORDER BY table_name;"
     df = pd.read_sql(sql, engine)
     return df
 
@@ -105,7 +105,7 @@ except OperationalError as e:
 
 #app.layout = dash_table.DataTable(df.to_dict('records'), [{"name": i, "id": i} for i in fetch_table_list().columns])
 app.layout = html.Div([
-    html.H1("SQL Database Test"),
+    html.H1("SQL Database Test :: " + DB_HOST ),
     dash_table.DataTable(
         id='sql-data-table',
         columns=[{"name": i, "id": i} for i in fetch_table_list().columns],

@@ -5,3 +5,4 @@ __pycache__
 /logs
 app.py.txt
 app.py1.txt
+.vscode/launch.json
