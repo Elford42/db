@@ -1,15 +1,10 @@
 from dash import Dash, html, dcc , dash_table
-# from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 import pandas as pd
-# import numpy as np
 from sqlalchemy import create_engine,text
 from sqlalchemy.exc import OperationalError
-# from credentials import sql_engine_string_generator
 from flask import request
 # from datetime import datetime
-# from azure.identity import DefaultAzureCredential
-# from azure.keyvault.secrets import SecretClient
 import os
 from dotenv import load_dotenv 
 import logging
@@ -23,7 +18,7 @@ else:
     local = False
 
 # Version number to display
-version = "1.3"
+version = "2.0"
 
 # Setup logger
 if not os.path.exists('logs'):
@@ -35,28 +30,20 @@ logging.basicConfig(
     filemode='w+',
     level = 20)
 
-#logging.getLogger("azure").setLevel(logging.ERROR)
-logging.getLogger("azure").setLevel(logging.DEBUG)
+# logging.getLogger("azure").setLevel(logging.ERROR)
+# logging.getLogger("azure").setLevel(logging.DEBUG)
+logging.getLogger("azure").setLevel(logging.INFO)
 
 #initialize the dash app as 'app'
 app = Dash(__name__,
             external_stylesheets=[dbc.themes.SLATE],
             requests_pathname_prefix="/app/AQPDDEV/",
             routes_pathname_prefix="/app/AQPDDEV/")
-# app = Dash(__name__,
-#             external_stylesheets=[dbc.themes.SLATE])
 
 # Global variable to store headers
 # request_headers = {}
 
 print ( 'python print: PYTHON START' )
-
-# # Get connection string
-# sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','DATAHUB_SWAPIT_DBNAME','DATAHUB_PSQL_EDITUSER','DATAHUB_PSQL_EDITPASSWORD')
-# swapit_sql_engine=create_engine(sql_engine_string)
-
-#sql_engine_string=sql_engine_string_generator('DATAHUB_PSQL_SERVER','dcp','DATAHUB_PSQL_USER','DATAHUB_PSQL_PASSWORD')
-# dcp_sql_engine=create_engine(sql_engine_string)
 
 MSG = " PYTHON START :: "
 
@@ -131,7 +118,6 @@ app.layout = html.Div([
 ])
 
 # print ( 'python print: after app layout' )
-
 # server = app.server 
 
 if not local:
@@ -140,6 +126,7 @@ if not local:
 else:
     ## local dash
     if __name__=='__main__':
-        app.run(debug=True,port=8080)
+        # app.run(debug=True,port=8080)
+        app.run(port=8080)
 
 print ( 'python print: after app loaded' )
