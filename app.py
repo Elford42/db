@@ -1,13 +1,13 @@
-from dash import Dash, html, dcc 
-from dash.dependencies import Input, Output, State
+from dash import Dash, html, dcc , dash_table
+# from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-# import pandas as pd
+import pandas as pd
 # import numpy as np
 from sqlalchemy import create_engine,text
 from sqlalchemy.exc import OperationalError
 # from credentials import sql_engine_string_generator
 from flask import request
-from datetime import datetime
+# from datetime import datetime
 # from azure.identity import DefaultAzureCredential
 # from azure.keyvault.secrets import SecretClient
 import os
@@ -82,19 +82,38 @@ engine = create_engine(db_url, pool_pre_ping=True)  # pool_pre_ping helps detect
 
 sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='data';"
   
+def fetch_table_list():
+    sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='data';"
+    df = pd.read_sql(sql, engine)
+    return df
+
 try:
     with engine.connect() as connection:
         print("Connection successful!")
         MSG += "<BR>Connection successful!"
-        result = connection.execute(text( sql ))
-        for row in result:
-            print(row)
+        # result = connection.execute(text( sql ))
+        # for row in result:
+        #     print(row)
 
 except OperationalError as e:
     print(f"Connection failed: {e}")
     MSG += f"<BR> :: An error occurred: {e}"
 
-app.layout = [ html.p( children = MSG ) ]
+# app.layout = [ html.div( children = MSG ) ]
+
+app.layout = html.Div([
+    html.H1("SQL Database Test"),
+    dash_table.DataTable(
+        id='sql-data-table',
+        columns=[{"table_name": i} for i in fetch_table_list().columns],
+        data=fetch_table_list().to_dict('records'),
+        editable=False,  # Set to True if you want to allow editing in the table
+        filter_action="native",
+        sort_action="native",
+        page_action="native",
+        page_size=100,
+    )
+])
 
 print ( 'python print: after app layout' )
 
