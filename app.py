@@ -13,6 +13,14 @@ from flask import request
 import os
 from dotenv import load_dotenv 
 import logging
+import socket
+
+# Local dev boolean
+computer = socket.gethostname()
+if computer == 'WONTN74906':
+    local = True
+else:
+    local = False
 
 # Version number to display
 version = "1.3"
@@ -126,6 +134,12 @@ app.layout = html.Div([
 
 print ( 'python print: after app layout' )
 
-server = app.server 
+# server = app.server 
+
+if not local:
+    server = app.server
+else:
+    if __name__=='__main__':
+        app.run(debug=True,port=8080)
 
 print ( 'python print: after app loaded' )
