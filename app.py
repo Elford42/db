@@ -32,7 +32,8 @@ logging.basicConfig(
 
 # logging.getLogger("azure").setLevel(logging.ERROR)
 # logging.getLogger("azure").setLevel(logging.DEBUG)
-logging.getLogger("azure").setLevel(logging.INFO)
+# logging.getLogger("azure").setLevel(logging.INFO)
+logging.getLogger("azure").setLevel(logging.WARNING)
 
 #initialize the dash app as 'app'
 app = Dash(__name__,
