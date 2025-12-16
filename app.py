@@ -8,7 +8,7 @@ from dash import html
 # from sqlalchemy.exc import OperationalError
 # from flask import request
 # # from datetime import datetime
-# import os
+import os
 # from dotenv import load_dotenv 
 import logging
 import socket
