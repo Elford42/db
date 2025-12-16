@@ -13,6 +13,9 @@ from dash import html
 import logging
 import socket
 
+print ( socket.gethostname() )
+print ( socket.getfqdn() )
+
 # Local dev boolean
 computer = socket.gethostname().lower()
 if computer == 'WONTN74906':
@@ -41,7 +44,7 @@ logging.getLogger("azure").setLevel(logging.DEBUG)
 #initialize the dash app as 'app'
 #            external_stylesheets=[dbc.themes.SLATE],
 
-app = Dash(__name__,
+app = dash.Dash(__name__,
             requests_pathname_prefix="/app/AQPDDEV/",
             routes_pathname_prefix="/app/AQPDDEV/")
 server = app.server
