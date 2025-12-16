@@ -44,6 +44,7 @@ logging.getLogger("azure").setLevel(logging.DEBUG)
 app = Dash(__name__,
             requests_pathname_prefix="/app/AQPDDEV/",
             routes_pathname_prefix="/app/AQPDDEV/")
+server = app.server
 
 # Global variable to store headers
 # request_headers = {}
@@ -132,11 +133,12 @@ app.layout = html.Div([
 
 if not local:
     ## FSDH cloud
-    server = app.server
+    if __name__=='__main__':
+        app.run(debug=True,port=8080)
 else:
     ## local dash
     if __name__=='__main__':
-        # app.run(debug=True,port=8080)
-        app.run(port=8080)
+        app.run(debug=True,port=8080)
+        #app.run(port=8080)
 
 print ( 'python print: after app loaded' )
