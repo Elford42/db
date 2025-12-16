@@ -13,9 +13,6 @@ import os
 import logging
 import socket
 
-print ( socket.gethostname() )
-print ( socket.getfqdn() )
-
 # Local dev boolean
 computer = socket.gethostname().lower()
 if computer == 'WONTN74906':
@@ -43,6 +40,13 @@ logging.getLogger("azure").setLevel(logging.DEBUG)
 
 #initialize the dash app as 'app'
 #            external_stylesheets=[dbc.themes.SLATE],
+
+print ( 'HOSTNAME: ')
+print ( socket.gethostname() )
+print ( socket.getfqdn() )
+
+hostname = socket.gethostname().lower()
+fqdn = socket.getfqdn().lower()
 
 app = dash.Dash(__name__,
             requests_pathname_prefix="/app/AQPDDEV/",
@@ -76,9 +80,9 @@ except Exception as e:
 print ( 'python print: after credentials' )
 
 app.layout = html.Div([
-    html.H1("Hello World from Dash!")
+    html.H1("Hello World from Dash!"),
+    html.P(f"Running on host: {hostname} (FQDN: {fqdn})")
 ])
-
 
 # db_url = "postgresql://" + DB_USER + ":" + DB_PASS + "@" + DB_HOST + ":5432/borden?sslmode=require"
 
